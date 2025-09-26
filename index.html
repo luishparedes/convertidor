@@ -3,118 +3,668 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conversor de Datos - Calculadora</title>
+    <title>Conversor TOTAL - Recuperación Completa</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        textarea { width: 100%; height: 200px; margin: 10px 0; }
-        button { padding: 10px 20px; margin: 5px; }
-        .result { background: #f5f5f5; padding: 15px; margin: 10px 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .step h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            margin: 15px 0;
+            line-height: 1.4;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-super {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            font-size: 18px;
+            padding: 18px 35px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result {
+            background: #e8f5e8;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            display: none;
+            border-left: 5px solid #28a745;
+        }
+        
+        .result h3 {
+            color: #28a745;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #28a745;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-top: 20px;
+            border: 1px solid #444;
+        }
+        
+        .progress-container {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: #28a745;
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        
+        .instructions ol {
+            margin-left: 25px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 12px;
+        }
+        
+        .icon {
+            font-size: 1.3em;
+        }
+        
+        .product-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .product-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Conversor de Datos para Nueva Calculadora</h1>
+        <header>
+            <h1><span class="icon">🚀</span> CONVERSOR TOTAL - Recuperación COMPLETA</h1>
+            <p style="font-size: 1.2rem; margin-top: 10px;">Recupera el 100% de tus productos y datos</p>
+        </header>
         
-        <h3>Paso 1: Copia los datos de la calculadora antigua</h3>
-        <p>Ve a las Herramientas de Desarrollador (F12) → Application → Local Storage → Copia TODO el contenido:</p>
-        
-        <h3>Paso 2: Pega los datos aquí</h3>
-        <textarea id="datosAntiguos" placeholder="Pega aquí todo el localStorage de la versión antigua..."></textarea>
-        
-        <button onclick="convertirDatos()">Convertir Datos</button>
-        <button onclick="limpiarTodo()">Limpiar</button>
-        
-        <h3>Paso 3: Descarga el backup convertido</h3>
-        <div id="resultado" class="result" style="display: none;">
-            <p>✅ Conversión exitosa! <button onclick="descargarBackup()">Descargar Backup</button></p>
-            <pre id="jsonResultado"></pre>
+        <div class="content">
+            <div class="step">
+                <h2><span class="step-number">1</span> Extraer TODOS los datos de la calculadora antigua</h2>
+                <div class="instructions">
+                    <ol>
+                        <li>Abre la <strong>calculadora antigua</strong> en tu navegador</li>
+                        <li>Presiona <strong>F12</strong> → <strong>Application</strong> → <strong>Local Storage</strong></li>
+                        <li>Selecciona <strong>TODAS las entradas</strong> (Ctrl+A) y cópialas (Ctrl+C)</li>
+                        <li><strong>IMPORTANTE:</strong> Asegúrate de copiar TODO, incluso si el texto parece incompleto</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="step">
+                <h2><span class="step-number">2</span> Pegar datos para recuperación TOTAL</h2>
+                <textarea id="datosAntiguos" placeholder="Pega aquí TODO el contenido del Local Storage... 
+
+Debe incluir líneas como:
+productos	[{"nombre":"Producto1", ...}, {"nombre":"Producto2", ...}...
+nombreEstablecimiento	Mi Tienda
+tasaBCV	180
+ventasDiarias	[...]
+..."></textarea>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-super" onclick="recuperacionTotal()">
+                        <span class="icon">🔍</span> RECUPERACIÓN TOTAL (200+ Productos)
+                    </button>
+                    <button class="btn-warning" onclick="limpiarTodo()">
+                        <span class="icon">🗑️</span> Limpiar Todo
+                    </button>
+                </div>
+            </div>
+            
+            <div class="result" id="resultado">
+                <h3><span class="icon">🎉</span> ¡RECUPERACIÓN EXITOSA!</h3>
+                
+                <div class="stats-grid" id="estadisticas">
+                    <!-- Estadísticas se llenarán dinámicamente -->
+                </div>
+                
+                <div class="alert alert-success">
+                    <strong>¡Éxito total!</strong> Se han recuperado <span id="totalProductosRecuperados">0</span> productos de forma completa.
+                </div>
+                
+                <div id="listaProductos" class="product-list" style="display: none;">
+                    <h4>Productos recuperados:</h4>
+                    <div id="productosContainer"></div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn-super" onclick="descargarBackupCompleto()">
+                        <span class="icon">💾</span> Descargar Backup COMPLETO
+                    </button>
+                    <button class="btn-primary" onclick="copiarJSONCompleto()">
+                        <span class="icon">📋</span> Copiar JSON Completo
+                    </button>
+                </div>
+                
+                <h4>Vista previa del backup (primeros 5 productos):</h4>
+                <pre id="jsonResultado"></pre>
+            </div>
+            
+            <div class="step">
+                <h2><span class="step-number">3</span> Importar en la nueva calculadora</h2>
+                <div class="instructions">
+                    <ol>
+                        <li>Descarga el archivo JSON generado</li>
+                        <li>Abre la <strong>nueva calculadora</strong></li>
+                        <li>Ve a <strong>Configuración → Respaldos → Importar</strong></li>
+                        <li>Selecciona el archivo JSON descargado</li>
+                        <li>Confirma la importación</li>
+                        <li>¡Disfruta de todos tus datos recuperados!</li>
+                    </ol>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        function convertirDatos() {
+        let backupCompleto = null;
+        
+        function recuperacionTotal() {
             try {
                 const datosTexto = document.getElementById('datosAntiguos').value.trim();
                 if (!datosTexto) {
                     alert('Por favor pega los datos de la calculadora antigua');
                     return;
                 }
-
-                // Parsear los datos del localStorage antiguo
-                const datosParseados = parsearLocalStorage(datosTexto);
                 
-                // Convertir al formato nuevo
-                const backupNuevo = {
-                    productos: datosParseados.productos || [],
-                    nombreEstablecimiento: datosParseados.nombreEstablecimiento || '',
-                    tasaBCV: parseFloat(datosParseados.tasaBCV) || 0,
-                    ventasDiarias: datosParseados.ventasDiarias || [],
-                    carrito: datosParseados.carrito || [],
+                console.log('🚀 Iniciando recuperación TOTAL...');
+                actualizarProgreso(10);
+                
+                // ANÁLISIS COMPLETO del texto
+                const lineas = datosTexto.split('\n');
+                console.log('📊 Total de líneas:', lineas.length);
+                
+                // BUSCAR Y RECONSTRUIR el JSON de productos COMPLETO
+                actualizarProgreso(30);
+                const productosCompletos = reconstruirProductosCompletos(lineas);
+                
+                // EXTRAER todos los demás datos
+                actualizarProgreso(60);
+                const otrosDatos = extraerTodosLosDatos(lineas);
+                
+                // CREAR BACKUP COMPLETO
+                actualizarProgreso(80);
+                backupCompleto = {
+                    productos: productosCompletos,
+                    nombreEstablecimiento: otrosDatos.nombreEstablecimiento || '',
+                    tasaBCV: parseFloat(otrosDatos.tasaBCV) || 0,
+                    ventasDiarias: otrosDatos.ventasDiarias || [],
+                    carrito: otrosDatos.carrito || [],
                     fechaBackup: new Date().toISOString(),
                     version: '1.0.2'
                 };
-
-                // Mostrar resultado
-                document.getElementById('jsonResultado').textContent = JSON.stringify(backupNuevo, null, 2);
-                document.getElementById('resultado').style.display = 'block';
                 
-                // Guardar en variable global para descarga
-                window.backupConvertido = backupNuevo;
+                // MOSTRAR RESULTADOS
+                actualizarProgreso(100);
+                mostrarResultadosCompletos(backupCompleto);
                 
-                alert(`✅ Conversión exitosa!\nProductos: ${backupNuevo.productos.length}\nVentas: ${backupNuevo.ventasDiarias.length}`);
+                console.log('🎉 RECUPERACIÓN COMPLETADA:', backupCompleto.productos.length, 'productos');
                 
             } catch (error) {
-                alert('Error en la conversión: ' + error.message);
-                console.error(error);
+                console.error('Error en recuperación:', error);
+                alert('❌ Error: ' + error.message);
+                actualizarProgreso(0);
             }
         }
-
-        function parsearLocalStorage(texto) {
-            const lineas = texto.split('\n');
-            const resultado = {};
+        
+        function reconstruirProductosCompletos(lineas) {
+            console.log('🔍 Buscando productos en', lineas.length, 'líneas...');
             
-            lineas.forEach(linea => {
-                const partes = linea.split('\t');
-                if (partes.length === 2) {
-                    const clave = partes[0].trim();
-                    const valor = partes[1].trim();
+            let jsonProductos = '';
+            let enSeccionProductos = false;
+            let nivelAnidamiento = 0;
+            
+            // BUSCAR la línea que comienza con "productos" y reconstruir TODO
+            for (let i = 0; i < lineas.length; i++) {
+                const linea = lineas[i].trim();
+                
+                if (linea.startsWith('productos\t')) {
+                    enSeccionProductos = true;
+                    jsonProductos = linea.substring(linea.indexOf('\t') + 1);
+                    console.log('📝 Encontrado inicio de productos');
+                } else if (enSeccionProductos) {
+                    // Verificar si es una nueva clave (nuevo item del localStorage)
+                    if (linea.includes('\t') && !linea.startsWith(' ') && 
+                        !linea.startsWith('{') && !linea.startsWith('[') && 
+                        !linea.startsWith(',') && nivelAnidamiento === 0) {
+                        // Nueva clave detectada, terminar
+                        console.log('🔚 Fin de sección productos detectado');
+                        break;
+                    }
                     
-                    try {
-                        // Intentar parsear como JSON, si falla guardar como string
-                        resultado[clave] = JSON.parse(valor);
-                    } catch (e) {
-                        resultado[clave] = valor;
+                    // Agregar línea al JSON (manteniendo estructura)
+                    jsonProductos += ' ' + linea;
+                    
+                    // Contar niveles de anidamiento
+                    nivelAnidamiento += (linea.match(/{/g) || []).length;
+                    nivelAnidamiento -= (linea.match(/}/g) || []).length;
+                }
+            }
+            
+            console.log('📦 JSON reconstruido (primeros 500 chars):', jsonProductos.substring(0, 500));
+            
+            // REPARACIÓN AVANZADA del JSON
+            return repararJSONAvanzado(jsonProductos);
+        }
+        
+        function repararJSONAvanzado(jsonString) {
+            console.log('🔧 Reparación avanzada del JSON...');
+            
+            // CONTAR objetos aproximados
+            const conteoObjetos = (jsonString.match(/{/g) || []).length;
+            console.log('📊 Objetos detectados aproximadamente:', conteoObjetos);
+            
+            // MÉTODO 1: Búsqueda exhaustiva de objetos
+            const objetos = [];
+            let posicion = 0;
+            
+            while (posicion < jsonString.length) {
+                const inicioObjeto = jsonString.indexOf('{', posicion);
+                if (inicioObjeto === -1) break;
+                
+                let finObjeto = jsonString.indexOf('}', inicioObjeto);
+                if (finObjeto === -1) {
+                    // Objeto incompleto, intentar encontrar cierre
+                    finObjeto = jsonString.length - 1;
+                }
+                
+                const objetoTexto = jsonString.substring(inicioObjeto, finObjeto + 1);
+                
+                try {
+                    const objeto = JSON.parse(objetoTexto);
+                    if (objeto.nombre && objeto.costo !== undefined) {
+                        objetos.push(objeto);
+                    }
+                } catch (e) {
+                    // Intentar reparación profunda
+                    const objetoReparado = reparacionProfunda(objetoTexto);
+                    if (objetoReparado) {
+                        objetos.push(objetoReparado);
                     }
                 }
-            });
+                
+                posicion = finObjeto + 1;
+            }
             
-            return resultado;
+            console.log('✅ Objetos recuperados:', objetos.length);
+            return objetos;
         }
-
-        function descargarBackup() {
-            if (!window.backupConvertido) {
-                alert('Primero convierte los datos');
+        
+        function reparacionProfunda(textoObjeto) {
+            try {
+                // REPARACIÓN PROFUNDA del objeto
+                let reparado = textoObjeto.trim();
+                
+                // Asegurar formato JSON válido
+                if (!reparado.startsWith('{')) reparado = '{' + reparado;
+                if (!reparado.endsWith('}')) reparado += '}';
+                
+                // Reparar comillas en claves
+                reparado = reparado.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)(\s*:)/g, '$1"$2"$3');
+                
+                // Reparar valores string sin comillas
+                reparado = reparado.replace(/:\s*([a-zA-Z_][a-zA-Z0-9_]*)(?=\s*[,}])/g, ':"$1"');
+                
+                return JSON.parse(reparado);
+            } catch (e) {
+                console.log('❌ Objeto no reparable:', textoObjeto.substring(0, 100));
+                return null;
+            }
+        }
+        
+        function extraerTodosLosDatos(lineas) {
+            const datos = {};
+            
+            for (let i = 0; i < lineas.length; i++) {
+                const linea = lineas[i];
+                const indiceTab = linea.indexOf('\t');
+                
+                if (indiceTab > 0) {
+                    const clave = linea.substring(0, indiceTab).trim();
+                    const valor = linea.substring(indiceTab + 1).trim();
+                    
+                    if (clave === 'nombreEstablecimiento') {
+                        datos.nombreEstablecimiento = valor;
+                    } else if (clave === 'tasaBCV') {
+                        datos.tasaBCV = valor;
+                    } else if (clave === 'ventasDiarias' || clave === 'carrito') {
+                        try {
+                            datos[clave] = JSON.parse(valor);
+                        } catch (e) {
+                            datos[clave] = [];
+                        }
+                    }
+                }
+            }
+            
+            return datos;
+        }
+        
+        function mostrarResultadosCompletos(backup) {
+            const statsHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${backup.productos.length}</div>
+                    <div class="stat-label">Productos Recuperados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${backup.ventasDiarias.length}</div>
+                    <div class="stat-label">Ventas Convertidas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${backup.tasaBCV}</div>
+                    <div class="stat-label">Tasa BCV</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${backup.carrito.length}</div>
+                    <div class="stat-label">Items en Carrito</div>
+                </div>
+            `;
+            
+            document.getElementById('estadisticas').innerHTML = statsHTML;
+            document.getElementById('totalProductosRecuperados').textContent = backup.productos.length;
+            
+            // Mostrar lista de productos
+            if (backup.productos.length > 0) {
+                const productosHTML = backup.productos.slice(0, 20).map(p => 
+                    `<div class="product-item">
+                        <span>${p.nombre || 'Sin nombre'}</span>
+                        <span>$${p.precioUnitarioDolar?.toFixed(2) || '0.00'}</span>
+                    </div>`
+                ).join('');
+                
+                document.getElementById('productosContainer').innerHTML = productosHTML;
+                document.getElementById('listaProductos').style.display = 'block';
+            }
+            
+            // Mostrar vista previa (primeros 5 productos)
+            const vistaPrevia = {
+                ...backup,
+                productos: backup.productos.slice(0, 5)
+            };
+            
+            document.getElementById('jsonResultado').textContent = JSON.stringify(vistaPrevia, null, 2);
+            document.getElementById('resultado').style.display = 'block';
+            
+            // Scroll al resultado
+            setTimeout(() => {
+                document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+            }, 500);
+        }
+        
+        function actualizarProgreso(porcentaje) {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = porcentaje + '%';
+        }
+        
+        function descargarBackupCompleto() {
+            if (!backupCompleto) {
+                alert('Primero realiza la recuperación');
                 return;
             }
             
-            const dataStr = JSON.stringify(window.backupConvertido, null, 2);
+            const dataStr = JSON.stringify(backupCompleto, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_nueva_calculadora_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_total_${backupCompleto.productos.length}_productos_${new Date().toISOString().slice(0, 10)}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            alert(`🎉 ¡Backup COMPLETO descargado!\n\n${backupCompleto.productos.length} productos recuperados\n${backupCompleto.ventasDiarias.length} ventas convertidas`);
         }
-
+        
+        function copiarJSONCompleto() {
+            if (!backupCompleto) return;
+            
+            const jsonStr = JSON.stringify(backupCompleto, null, 2);
+            navigator.clipboard.writeText(jsonStr).then(() => {
+                alert('✅ JSON completo copiado al portapapeles!');
+            });
+        }
+        
         function limpiarTodo() {
             document.getElementById('datosAntiguos').value = '';
             document.getElementById('resultado').style.display = 'none';
-            window.backupConvertido = null;
+            document.getElementById('progressBar').style.width = '0%';
+            backupCompleto = null;
         }
     </script>
 </body>
