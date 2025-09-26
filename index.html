@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Datos - Calculadora</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        textarea { width: 100%; height: 200px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+        .result { background: #f5f5f5; padding: 15px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversor de Datos para Nueva Calculadora</h1>
+        
+        <h3>Paso 1: Copia los datos de la calculadora antigua</h3>
+        <p>Ve a las Herramientas de Desarrollador (F12) → Application → Local Storage → Copia TODO el contenido:</p>
+        
+        <h3>Paso 2: Pega los datos aquí</h3>
+        <textarea id="datosAntiguos" placeholder="Pega aquí todo el localStorage de la versión antigua..."></textarea>
+        
+        <button onclick="convertirDatos()">Convertir Datos</button>
+        <button onclick="limpiarTodo()">Limpiar</button>
+        
+        <h3>Paso 3: Descarga el backup convertido</h3>
+        <div id="resultado" class="result" style="display: none;">
+            <p>✅ Conversión exitosa! <button onclick="descargarBackup()">Descargar Backup</button></p>
+            <pre id="jsonResultado"></pre>
+        </div>
+    </div>
+
+    <script>
+        function convertirDatos() {
+            try {
+                const datosTexto = document.getElementById('datosAntiguos').value.trim();
+                if (!datosTexto) {
+                    alert('Por favor pega los datos de la calculadora antigua');
+                    return;
+                }
+
+                // Parsear los datos del localStorage antiguo
+                const datosParseados = parsearLocalStorage(datosTexto);
+                
+                // Convertir al formato nuevo
+                const backupNuevo = {
+                    productos: datosParseados.productos || [],
+                    nombreEstablecimiento: datosParseados.nombreEstablecimiento || '',
+                    tasaBCV: parseFloat(datosParseados.tasaBCV) || 0,
+                    ventasDiarias: datosParseados.ventasDiarias || [],
+                    carrito: datosParseados.carrito || [],
+                    fechaBackup: new Date().toISOString(),
+                    version: '1.0.2'
+                };
+
+                // Mostrar resultado
+                document.getElementById('jsonResultado').textContent = JSON.stringify(backupNuevo, null, 2);
+                document.getElementById('resultado').style.display = 'block';
+                
+                // Guardar en variable global para descarga
+                window.backupConvertido = backupNuevo;
+                
+                alert(`✅ Conversión exitosa!\nProductos: ${backupNuevo.productos.length}\nVentas: ${backupNuevo.ventasDiarias.length}`);
+                
+            } catch (error) {
+                alert('Error en la conversión: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        function parsearLocalStorage(texto) {
+            const lineas = texto.split('\n');
+            const resultado = {};
+            
+            lineas.forEach(linea => {
+                const partes = linea.split('\t');
+                if (partes.length === 2) {
+                    const clave = partes[0].trim();
+                    const valor = partes[1].trim();
+                    
+                    try {
+                        // Intentar parsear como JSON, si falla guardar como string
+                        resultado[clave] = JSON.parse(valor);
+                    } catch (e) {
+                        resultado[clave] = valor;
+                    }
+                }
+            });
+            
+            return resultado;
+        }
+
+        function descargarBackup() {
+            if (!window.backupConvertido) {
+                alert('Primero convierte los datos');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(window.backupConvertido, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `respaldo_nueva_calculadora_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function limpiarTodo() {
+            document.getElementById('datosAntiguos').value = '';
+            document.getElementById('resultado').style.display = 'none';
+            window.backupConvertido = null;
+        }
+    </script>
+</body>
+</html>
